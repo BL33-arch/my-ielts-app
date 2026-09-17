@@ -30,11 +30,13 @@ export default function Home() {
             gap: "20px",
           }}
         >
-          <div style={cardStyle}>
-            <div style={{ fontSize: "42px" }}>📚</div>
-            <h2>Vocabulary</h2>
-            <p>Learn and review IELTS vocabulary.</p>
-          </div>
+          <a href="/vocabulary" style={linkStyle}>
+            <div style={cardStyle}>
+              <div style={{ fontSize: "42px" }}>📚</div>
+              <h2>Vocabulary</h2>
+              <p>Learn and review IELTS vocabulary.</p>
+            </div>
+          </a>
 
           <div style={cardStyle}>
             <div style={{ fontSize: "42px" }}>🎤</div>
@@ -59,4 +61,11 @@ const cardStyle = {
   borderRadius: "16px",
   boxShadow: "0 4px 15px rgba(0,0,0,0.08)",
   textAlign: "left",
+  height: "100%",
+  boxSizing: "border-box",
+};
+
+const linkStyle = {
+  textDecoration: "none",
+  color: "inherit",
 };
