@@ -83,7 +83,7 @@ async function getWords() {
       level:
         properties.Level?.select?.name || "",
     };
-  });
+  }).filter((item) => item.word.trim() !== "");
 }
 
 export default async function VocabularyPage() {
