@@ -85,7 +85,9 @@ export default async function VocabularyPage({ searchParams }) {
   const words = await getWords();
 
   const params = await searchParams;
+
   const selectedTopic = params?.topic || "All";
+  const selectedLevel = params?.level || "All";
 
   const topics = [
     "All",
@@ -97,10 +99,38 @@ export default async function VocabularyPage({ searchParams }) {
     "Society",
   ];
 
-  const filteredWords =
-    selectedTopic === "All"
-      ? words
-      : words.filter((item) => item.topic === selectedTopic);
+  const levels = [
+    "All",
+    "Beginner",
+    "Intermediate",
+    "Advanced",
+  ];
+
+  const filteredWords = words.filter((item) => {
+    const topicMatch =
+      selectedTopic === "All" || item.topic === selectedTopic;
+
+    const levelMatch =
+      selectedLevel === "All" || item.level === selectedLevel;
+
+    return topicMatch && levelMatch;
+  });
+
+  function makeUrl(topic, level) {
+    const params = new URLSearchParams();
+
+    if (topic !== "All") {
+      params.set("topic", topic);
+    }
+
+    if (level !== "All") {
+      params.set("level", level);
+    }
+
+    const query = params.toString();
+
+    return query ? `/vocabulary?${query}` : "/vocabulary";
+  }
 
   return (
     <main
@@ -135,7 +165,7 @@ export default async function VocabularyPage({ searchParams }) {
             display: "flex",
             flexWrap: "wrap",
             gap: "10px",
-            marginBottom: "30px",
+            marginBottom: "18px",
           }}
         >
           {topics.map((topic) => {
@@ -144,11 +174,7 @@ export default async function VocabularyPage({ searchParams }) {
             return (
               <a
                 key={topic}
-                href={
-                  topic === "All"
-                    ? "/vocabulary"
-                    : `/vocabulary?topic=${encodeURIComponent(topic)}`
-                }
+                href={makeUrl(topic, selectedLevel)}
                 style={{
                   textDecoration: "none",
                   padding: "10px 16px",
@@ -159,6 +185,37 @@ export default async function VocabularyPage({ searchParams }) {
                 }}
               >
                 {topic}
+              </a>
+            );
+          })}
+        </div>
+
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "10px",
+            marginBottom: "30px",
+          }}
+        >
+          {levels.map((level) => {
+            const active = selectedLevel === level;
+
+            return (
+              <a
+                key={level}
+                href={makeUrl(selectedTopic, level)}
+                style={{
+                  textDecoration: "none",
+                  padding: "8px 14px",
+                  borderRadius: "20px",
+                  background: active ? "#111" : "#fff",
+                  color: active ? "#fff" : "#333",
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+                  fontSize: "14px",
+                }}
+              >
+                {level === "All" ? "All Levels" : level}
               </a>
             );
           })}
