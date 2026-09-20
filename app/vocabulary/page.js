@@ -72,8 +72,7 @@ async function getWords() {
             .join("") || "",
 
         topic:
-          properties.Topic?.select?.n
-          ame || "",
+          properties.Topic?.select?.name || "",
 
         level:
           properties.Level?.select?.name || "",
