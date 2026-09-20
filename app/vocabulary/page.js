@@ -88,6 +88,7 @@ export default async function VocabularyPage({ searchParams }) {
 
   const selectedTopic = params?.topic || "All";
   const selectedLevel = params?.level || "All";
+  const search = params?.search || "";
 
   const topics = [
     "All",
@@ -113,21 +114,33 @@ export default async function VocabularyPage({ searchParams }) {
     const levelMatch =
       selectedLevel === "All" || item.level === selectedLevel;
 
-    return topicMatch && levelMatch;
+    const searchText = search.toLowerCase().trim();
+
+    const searchMatch =
+      searchText === "" ||
+      item.word.toLowerCase().includes(searchText) ||
+      item.meaning.toLowerCase().includes(searchText) ||
+      item.example.toLowerCase().includes(searchText);
+
+    return topicMatch && levelMatch && searchMatch;
   });
 
   function makeUrl(topic, level) {
-    const params = new URLSearchParams();
+    const urlParams = new URLSearchParams();
 
     if (topic !== "All") {
-      params.set("topic", topic);
+      urlParams.set("topic", topic);
     }
 
     if (level !== "All") {
-      params.set("level", level);
+      urlParams.set("level", level);
     }
 
-    const query = params.toString();
+    if (search.trim() !== "") {
+      urlParams.set("search", search);
+    }
+
+    const query = urlParams.toString();
 
     return query ? `/vocabulary?${query}` : "/vocabulary";
   }
@@ -159,6 +172,46 @@ export default async function VocabularyPage({ searchParams }) {
         <p style={{ color: "#666", marginBottom: "25px" }}>
           {filteredWords.length} words
         </p>
+
+        <form
+          action="/vocabulary"
+          method="GET"
+          style={{
+            display: "flex",
+            gap: "10px",
+            marginBottom: "25px",
+          }}
+        >
+          <input
+            type="text"
+            name="search"
+            defaultValue={search}
+            placeholder="Search English or Chinese..."
+            style={{
+              flex: 1,
+              padding: "13px 16px",
+              fontSize: "16px",
+              border: "1px solid #ddd",
+              borderRadius: "12px",
+              outline: "none",
+            }}
+          />
+
+          <button
+            type="submit"
+            style={{
+              padding: "13px 20px",
+              border: "none",
+              borderRadius: "12px",
+              background: "#111",
+              color: "white",
+              fontSize: "16px",
+              cursor: "pointer",
+            }}
+          >
+            🔍 Search
+          </button>
+        </form>
 
         <div
           style={{
