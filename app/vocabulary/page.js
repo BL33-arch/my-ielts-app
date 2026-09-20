@@ -72,10 +72,13 @@ async function getWords() {
             .join("") || "",
 
         topic:
-          properties.Topic?.select?.name || "",
+          properties.Topic?.select?.n
+          ame || "",
 
         level:
           properties.Level?.select?.name || "",
+        favorite:
+  properties.Favorite?.checkbox || false,
       };
     })
     .filter((item) => item.word.trim() !== "");
@@ -285,9 +288,10 @@ export default async function VocabularyPage({ searchParams }) {
                 boxShadow: "0 4px 15px rgba(0,0,0,0.06)",
               }}
             >
-              <h2 style={{ margin: "0 0 5px" }}>
-                {item.word}
-              </h2>
+             <h2 style={{ margin: "0 0 5px" }}>
+  {item.favorite ? "⭐ " : "☆ "}
+  {item.word}
+</h2>
 
               <div
                 style={{
