@@ -1,3 +1,4 @@
+import { revalidatePath } from "next/cache";
 async function getWords() {
   const token = process.env.NOTION_TOKEN;
   const databaseId = process.env.NOTION_DATABASE_ID;
@@ -82,7 +83,34 @@ async function getWords() {
     })
     .filter((item) => item.word.trim() !== "");
 }
-
+async function toggleFavorite(formData) {
+  "use server";
+  const pageId = formData.get("pageId");
+const currentFavorite = formData.get("currentFavorite") === "true";
+  const token = process.env.NOTION_TOKEN;
+  const response = await fetch(
+  `https://api.notion.com/v1/pages/${pageId}`,
+  {
+    method: "PATCH",
+    headers: {
+  Authorization: `Bearer ${token}`,
+  "Notion-Version": "2025-09-03",
+  "Content-Type": "application/json",
+},
+    body: JSON.stringify({
+  properties: {
+    Favorite: {
+      checkbox: !currentFavorite,
+    },
+  },
+}),
+}
+    );
+  if (!response.ok) {
+  throw new Error("Could not update favorite in Notion.");
+}
+  revalidatePath("/vocabulary");
+  }
 export default async function VocabularyPage({ searchParams }) {
   const words = await getWords();
 
@@ -287,10 +315,20 @@ export default async function VocabularyPage({ searchParams }) {
                 boxShadow: "0 4px 15px rgba(0,0,0,0.06)",
               }}
             >
-             <h2 style={{ margin: "0 0 5px" }}>
-  {item.favorite ? "⭐ " : "☆ "}
+<div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "5px" }}>
+ <form action={toggleFavorite} style={{ display: "inline" }}>
+  <input type="hidden" name="pageId" value={item.id} />
+  <input
+    type="hidden"
+    name="currentFavorite"
+    value={String(item.favorite)}
+  />
+  <button type="submit">
+    {item.favorite ? "⭐" : "☆"}
+  </button>
+</form>
   {item.word}
-</h2>
+</div>
 
               <div
                 style={{
